@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0716" />
+<title>AI Agency HQ · VR Walk</title>
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet" />
+  <script type="module" crossorigin src="./assets/index--tECwSqr.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-bV92IvTb.css">
+</head>
+<body>
+<div id="app"></div>
+<div id="fade"></div>
+
+<header id="top">
+  <a id="back" href="../" title="Back to the SCENA Sandbox">‹ Sandbox</a>
+  <div id="brand"><h1>AI AGENCY HQ</h1><p>VR WALK · <span id="where"></span></p></div>
+  <div id="top-r">
+    <div id="live" class="off"><i></i><span id="live-t">Connecting…</span><b id="live-n"></b></div>
+    <button id="rooms-btn">🗺️ Rooms</button>
+  </div>
+</header>
+
+<aside id="rooms">
+  <div class="rh"><span>GO TO A ROOM</span><button id="rooms-close" aria-label="Close">×</button></div>
+  <ul id="room-list"></ul>
+</aside>
+
+<div id="toast"><b id="toast-t"></b><span id="toast-s"></span></div>
+<p id="hint"><span class="d">Click the floor or a glowing pad to move · Drag to look · WASD walk · Q/E turn · R rooms</span><span class="m">Tap floor or a pad to move · Drag to look</span></p>
+<div id="vr-slot"></div>
+<div id="loader"><div class="spinner"></div><p>Building AI Agency HQ…</p></div>
+</body>
+</html>

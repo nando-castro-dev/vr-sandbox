@@ -1,0 +1,680 @@
+{
+  "_note": "Demo data shaped like GET /api/hq (v6). Fields with example:true are mock; source:<file> came from /workspace/ai-agency/help.",
+  "updated": "2026-11-19T22:30:00.000Z",
+  "stuckRules": {
+    "workingMin": 45,
+    "approvalHours": 12
+  },
+  "bots": {
+    "nando": {
+      "state": "working",
+      "task": "Reviewing approvals",
+      "since": "2026-11-19T22:24:00.000Z",
+      "queued": "Approve the 3 waiting cards",
+      "history": [
+        {
+          "t": "2026-11-19T16:00:00.000Z",
+          "state": "working",
+          "task": "Reviewed approvals"
+        },
+        {
+          "t": "2026-11-19T16:10:00.000Z",
+          "state": "idle",
+          "ms": 600000
+        },
+        {
+          "t": "2026-11-19T20:45:00.000Z",
+          "state": "working",
+          "task": "Reviewed approvals"
+        },
+        {
+          "t": "2026-11-19T20:55:00.000Z",
+          "state": "idle",
+          "ms": 600000
+        }
+      ]
+    },
+    "banker": {
+      "state": "needs_approval",
+      "task": "Move money into savings",
+      "since": "2026-11-19T22:08:00.000Z",
+      "queued": "Weekly budget check",
+      "history": [
+        {
+          "t": "2026-11-19T15:10:00.000Z",
+          "state": "working",
+          "task": "Balanced the budget"
+        },
+        {
+          "t": "2026-11-19T15:30:00.000Z",
+          "state": "idle",
+          "ms": 1200000
+        },
+        {
+          "t": "2026-11-19T18:10:00.000Z",
+          "state": "working",
+          "task": "Checked bills"
+        },
+        {
+          "t": "2026-11-19T18:25:00.000Z",
+          "state": "idle",
+          "ms": 900000
+        }
+      ]
+    },
+    "claude": {
+      "state": "needs_approval",
+      "task": "Publish AI Agency HQ v4",
+      "since": "2026-11-19T21:49:00.000Z",
+      "queued": "Review v4 demos",
+      "history": [
+        {
+          "t": "2026-11-19T14:30:00.000Z",
+          "state": "working",
+          "task": "Reviewed v3 build"
+        },
+        {
+          "t": "2026-11-19T15:00:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T15:20:00.000Z",
+          "state": "working",
+          "task": "Wrote status skill"
+        },
+        {
+          "t": "2026-11-19T15:40:00.000Z",
+          "state": "idle",
+          "ms": 1200000
+        },
+        {
+          "t": "2026-11-19T17:00:00.000Z",
+          "state": "working",
+          "task": "Reviewed characters"
+        },
+        {
+          "t": "2026-11-19T17:40:00.000Z",
+          "state": "idle",
+          "ms": 2400000
+        },
+        {
+          "t": "2026-11-19T19:30:00.000Z",
+          "state": "working",
+          "task": "Checked live link"
+        },
+        {
+          "t": "2026-11-19T19:55:00.000Z",
+          "state": "idle",
+          "ms": 1500000
+        },
+        {
+          "t": "2026-11-19T21:00:00.000Z",
+          "state": "working",
+          "task": "Reviewed v4 plan"
+        },
+        {
+          "t": "2026-11-19T21:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        }
+      ]
+    },
+    "fc-pro-painting": {
+      "state": "needs_approval",
+      "task": "Send a reply to a new lead",
+      "since": "2026-11-19T22:21:00.000Z",
+      "queued": "Post in 2 KC groups",
+      "history": [
+        {
+          "t": "2026-11-19T14:00:00.000Z",
+          "state": "working",
+          "task": "Posted in KC Facebook group"
+        },
+        {
+          "t": "2026-11-19T14:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T16:30:00.000Z",
+          "state": "working",
+          "task": "Drafted a flyer"
+        },
+        {
+          "t": "2026-11-19T16:55:00.000Z",
+          "state": "idle",
+          "ms": 1500000
+        },
+        {
+          "t": "2026-11-19T18:30:00.000Z",
+          "state": "working",
+          "task": "Before/after post"
+        },
+        {
+          "t": "2026-11-19T19:05:00.000Z",
+          "state": "idle",
+          "ms": 2100000
+        },
+        {
+          "t": "2026-11-19T20:30:00.000Z",
+          "state": "working",
+          "task": "Answered a lead"
+        },
+        {
+          "t": "2026-11-19T20:50:00.000Z",
+          "state": "idle",
+          "ms": 1200000
+        }
+      ]
+    },
+    "gpt": {
+      "state": "working",
+      "task": "Building the goal room",
+      "since": "2026-11-19T22:12:00.000Z",
+      "queued": "Status API step 1",
+      "history": [
+        {
+          "t": "2026-11-19T14:05:00.000Z",
+          "state": "working",
+          "task": "Planned HQ status API"
+        },
+        {
+          "t": "2026-11-19T14:40:00.000Z",
+          "state": "idle",
+          "ms": 2100000
+        },
+        {
+          "t": "2026-11-19T14:50:00.000Z",
+          "state": "working",
+          "task": "Fixed stair navigation"
+        },
+        {
+          "t": "2026-11-19T15:30:00.000Z",
+          "state": "idle",
+          "ms": 2400000
+        },
+        {
+          "t": "2026-11-19T15:40:00.000Z",
+          "state": "working",
+          "task": "Wired live status"
+        },
+        {
+          "t": "2026-11-19T16:05:00.000Z",
+          "state": "idle",
+          "ms": 1500000
+        },
+        {
+          "t": "2026-11-19T16:20:00.000Z",
+          "state": "working",
+          "task": "Built robot log panel"
+        },
+        {
+          "t": "2026-11-19T17:05:00.000Z",
+          "state": "idle",
+          "ms": 2700000
+        },
+        {
+          "t": "2026-11-19T17:15:00.000Z",
+          "state": "working",
+          "task": "Built scoreboard screen"
+        },
+        {
+          "t": "2026-11-19T17:45:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T19:00:00.000Z",
+          "state": "working",
+          "task": "Built approval inbox"
+        },
+        {
+          "t": "2026-11-19T19:50:00.000Z",
+          "state": "idle",
+          "ms": 3000000
+        },
+        {
+          "t": "2026-11-19T20:10:00.000Z",
+          "state": "working",
+          "task": "Phone app icons"
+        },
+        {
+          "t": "2026-11-19T20:45:00.000Z",
+          "state": "idle",
+          "ms": 2100000
+        }
+      ]
+    },
+    "tiktok": {
+      "state": "handoff",
+      "task": "Sending 3 clips to YouTube",
+      "since": "2026-11-19T22:28:00.000Z",
+      "handoffTo": "youtube",
+      "queued": "Feed training session",
+      "history": [
+        {
+          "t": "2026-11-19T15:00:00.000Z",
+          "state": "working",
+          "task": "Feed training session"
+        },
+        {
+          "t": "2026-11-19T15:45:00.000Z",
+          "state": "idle",
+          "ms": 2700000
+        },
+        {
+          "t": "2026-11-19T17:30:00.000Z",
+          "state": "working",
+          "task": "Edited 3 clips"
+        },
+        {
+          "t": "2026-11-19T18:00:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T19:15:00.000Z",
+          "state": "working",
+          "task": "Feed training session"
+        },
+        {
+          "t": "2026-11-19T19:55:00.000Z",
+          "state": "idle",
+          "ms": 2400000
+        },
+        {
+          "t": "2026-11-19T21:10:00.000Z",
+          "state": "working",
+          "task": "Picked trending sounds"
+        },
+        {
+          "t": "2026-11-19T21:30:00.000Z",
+          "state": "idle",
+          "ms": 1200000
+        }
+      ]
+    },
+    "youtube": {
+      "state": "working",
+      "task": "Exporting the weekly recap",
+      "since": "2026-11-19T22:16:00.000Z",
+      "queued": "Upload weekly recap",
+      "history": [
+        {
+          "t": "2026-11-19T16:00:00.000Z",
+          "state": "working",
+          "task": "Cut weekly recap"
+        },
+        {
+          "t": "2026-11-19T17:00:00.000Z",
+          "state": "idle",
+          "ms": 3600000
+        },
+        {
+          "t": "2026-11-19T18:00:00.000Z",
+          "state": "working",
+          "task": "Made thumbnails"
+        },
+        {
+          "t": "2026-11-19T18:40:00.000Z",
+          "state": "idle",
+          "ms": 2400000
+        },
+        {
+          "t": "2026-11-19T20:00:00.000Z",
+          "state": "working",
+          "task": "Exported recap"
+        },
+        {
+          "t": "2026-11-19T20:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        }
+      ]
+    },
+    "kalshi": {
+      "state": "working",
+      "task": "Pricing Sunday night odds",
+      "since": "2026-11-19T22:10:00.000Z",
+      "queued": "Check open positions",
+      "history": [
+        {
+          "t": "2026-11-19T15:00:00.000Z",
+          "state": "working",
+          "task": "Priced NBA lines"
+        },
+        {
+          "t": "2026-11-19T15:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        }
+      ]
+    },
+    "market-scroller": {
+      "state": "working",
+      "task": "Scanning Marketplace for iPhones",
+      "since": "2026-11-19T22:19:00.000Z",
+      "queued": "Phone deal scan",
+      "history": [
+        {
+          "t": "2026-11-19T14:20:00.000Z",
+          "state": "working",
+          "task": "Scanned for iPhones"
+        },
+        {
+          "t": "2026-11-19T14:50:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T15:30:00.000Z",
+          "state": "working",
+          "task": "Scanned for consoles"
+        },
+        {
+          "t": "2026-11-19T15:55:00.000Z",
+          "state": "idle",
+          "ms": 1500000
+        },
+        {
+          "t": "2026-11-19T17:00:00.000Z",
+          "state": "working",
+          "task": "Scanned for clothes"
+        },
+        {
+          "t": "2026-11-19T17:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T18:40:00.000Z",
+          "state": "working",
+          "task": "Scanned for iPhones"
+        },
+        {
+          "t": "2026-11-19T19:05:00.000Z",
+          "state": "idle",
+          "ms": 1500000
+        },
+        {
+          "t": "2026-11-19T20:00:00.000Z",
+          "state": "working",
+          "task": "Scanned for consoles"
+        },
+        {
+          "t": "2026-11-19T20:30:00.000Z",
+          "state": "idle",
+          "ms": 1800000
+        },
+        {
+          "t": "2026-11-19T21:20:00.000Z",
+          "state": "working",
+          "task": "Scanned for clothes"
+        },
+        {
+          "t": "2026-11-19T21:40:00.000Z",
+          "state": "idle",
+          "ms": 1200000
+        }
+      ]
+    },
+    "assistant-scroller": {
+      "state": "idle",
+      "task": "",
+      "since": "2026-11-19T06:05:00.000Z",
+      "queued": "Grade new finds",
+      "history": []
+    },
+    "nando-calendar": {
+      "state": "idle",
+      "task": "",
+      "since": "2026-11-19T21:40:00.000Z",
+      "queued": "Send morning plan",
+      "history": [
+        {
+          "t": "2026-11-19T13:30:00.000Z",
+          "state": "working",
+          "task": "Built today's plan"
+        },
+        {
+          "t": "2026-11-19T13:45:00.000Z",
+          "state": "idle",
+          "ms": 900000
+        },
+        {
+          "t": "2026-11-19T18:00:00.000Z",
+          "state": "working",
+          "task": "Moved gym block"
+        },
+        {
+          "t": "2026-11-19T18:10:00.000Z",
+          "state": "idle",
+          "ms": 600000
+        },
+        {
+          "t": "2026-11-19T21:30:00.000Z",
+          "state": "working",
+          "task": "Set tomorrow's plan"
+        },
+        {
+          "t": "2026-11-19T21:40:00.000Z",
+          "state": "idle",
+          "ms": 600000
+        }
+      ]
+    }
+  },
+  "approvals": [
+    {
+      "id": "a_demo1",
+      "bot": "banker",
+      "label": "Move money into savings",
+      "kind": "change",
+      "status": "pending",
+      "created": "2026-11-19T22:08:00.000Z",
+      "example": true
+    },
+    {
+      "id": "a_demo2",
+      "bot": "claude",
+      "label": "Publish AI Agency HQ v4",
+      "kind": "publish",
+      "status": "pending",
+      "created": "2026-11-19T21:49:00.000Z",
+      "example": true
+    },
+    {
+      "id": "a_demo3",
+      "bot": "fc-pro-painting",
+      "label": "Send a reply to a new lead",
+      "kind": "send",
+      "status": "pending",
+      "created": "2026-11-19T22:21:00.000Z",
+      "example": true
+    }
+  ],
+  "goals": [
+    {
+      "id": "g_savings",
+      "title": "Savings goal (% only)",
+      "owner": "banker",
+      "unit": "%",
+      "target": 100,
+      "updated": "2026-11-19",
+      "source": "banker-goals.json",
+      "progress": null,
+      "note": "Amount kept private"
+    },
+    {
+      "id": "g_paint",
+      "title": "Painting jobs booked",
+      "owner": "fc-pro-painting",
+      "unit": "jobs",
+      "updated": "2026-11-19",
+      "source": "painting-goals.json",
+      "progress": null,
+      "target": null,
+      "phase": "Marketing phase",
+      "note": "Posting in KC groups, no bookings counted yet"
+    },
+    {
+      "id": "g_tiktok",
+      "title": "TikTok feed on-theme",
+      "owner": "tiktok",
+      "progress": 57,
+      "unit": "%",
+      "target": 75,
+      "updated": "2026-11-19T00:35-06:00",
+      "source": "tiktok-goals.json",
+      "sessions": [
+        50,
+        60,
+        5,
+        38,
+        57
+      ],
+      "note": "Latest Nov 19, small sample of 7"
+    },
+    {
+      "id": "g_weight",
+      "title": "Weight to 175 lb lean",
+      "owner": "nando",
+      "start": 195,
+      "progress": 186,
+      "unit": "lb",
+      "target": 175,
+      "example": true
+    },
+    {
+      "id": "g_fitness",
+      "title": "Workouts this week",
+      "owner": "nando",
+      "kind": "fitness",
+      "progress": null,
+      "target": 5,
+      "unit": "workouts",
+      "note": "No workout log connected yet"
+    }
+  ],
+  "scenarios": {
+    "stuck": {
+      "bots": {
+        "kalshi": {
+          "state": "working",
+          "task": "Pricing Sunday night odds",
+          "since": "2026-11-19T20:20:00.000Z"
+        },
+        "youtube": {
+          "state": "error",
+          "task": "Upload failed: export timed out",
+          "since": "2026-11-19T22:16:00.000Z"
+        }
+      }
+    }
+  },
+  "day": {
+    "date": "2026-11-19",
+    "plan": [
+      {
+        "time": "5:00 AM",
+        "label": "Wake up",
+        "type": "personal",
+        "source": "calendar-plan.json"
+      },
+      {
+        "time": "5:00 AM",
+        "label": "Run & workout",
+        "type": "training",
+        "source": "calendar-plan.json"
+      },
+      {
+        "time": "8:15 PM",
+        "label": "Shower",
+        "type": "personal",
+        "source": "calendar-plan.json"
+      },
+      {
+        "time": "9:00 PM",
+        "label": "Evening free time",
+        "type": "free",
+        "source": "calendar-plan.json"
+      },
+      {
+        "time": "9:10 PM",
+        "label": "Wind down",
+        "type": "personal",
+        "source": "calendar-plan.json"
+      }
+    ],
+    "score": {
+      "nando": {
+        "done": 2,
+        "workMin": 20,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "banker": {
+        "done": 2,
+        "workMin": 35,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "claude": {
+        "done": 5,
+        "workMin": 145,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "fc-pro-painting": {
+        "done": 4,
+        "workMin": 110,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "gpt": {
+        "done": 7,
+        "workMin": 260,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "tiktok": {
+        "done": 4,
+        "workMin": 135,
+        "approvals": 0,
+        "handoffs": 1
+      },
+      "youtube": {
+        "done": 3,
+        "workMin": 130,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "kalshi": {
+        "done": 1,
+        "workMin": 30,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "market-scroller": {
+        "done": 6,
+        "workMin": 160,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "assistant-scroller": {
+        "done": 0,
+        "workMin": 0,
+        "approvals": 0,
+        "handoffs": 0
+      },
+      "nando-calendar": {
+        "done": 3,
+        "workMin": 35,
+        "approvals": 0,
+        "handoffs": 0
+      }
+    },
+    "scoreExample": true
+  }
+}
