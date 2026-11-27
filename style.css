@@ -11,9 +11,14 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--bg);font-family:
 #status span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
 #selInfo.has{border-color:var(--gold);color:var(--gold)}
 .topRight{display:flex;gap:8px;align-items:center}
-#vrSlot{position:relative;min-width:110px;height:34px}
-#vrSlot button{position:absolute!important;inset:0!important;left:0!important;bottom:auto!important;width:100%!important;height:34px!important;padding:0 10px!important;border-radius:10px!important;border:1px solid var(--gold)!important;background:linear-gradient(135deg,#6b2bd9,#a24bff)!important;color:#fff!important;font:700 12px system-ui!important;opacity:1!important;box-shadow:0 0 14px rgba(162,75,255,.6)}
-#vrSlot a{position:absolute!important;inset:0!important;left:0!important;bottom:auto!important;width:100%!important;height:34px!important;display:flex!important;align-items:center;justify-content:center;font:600 10px system-ui!important;padding:0 6px!important;border-radius:10px!important;background:rgba(40,20,70,.9)!important;border:1px solid var(--line)!important;color:#cdb8ff!important;line-height:1.1}
+#vrSlot{display:flex;gap:6px;align-items:center}
+#vrSlot button,#vrSlot a{position:static!important;inset:auto!important;width:auto!important;min-width:96px!important;height:34px!important;padding:0 10px!important;border-radius:10px!important;font:700 11px system-ui!important;opacity:1!important;line-height:1.1!important;display:flex!important;align-items:center;justify-content:center;text-align:center;text-decoration:none!important}
+#vrSlot button{border:1px solid var(--gold)!important;background:linear-gradient(135deg,#6b2bd9,#a24bff)!important;color:#fff!important;box-shadow:0 0 14px rgba(162,75,255,.6);cursor:pointer}
+#vrSlot #ARButton{background:linear-gradient(135deg,#b8860b,#ffc83d)!important;color:#1a0b2e!important;border-color:#fff3c4!important;box-shadow:0 0 14px rgba(255,200,61,.5)}
+#vrSlot button:disabled,#vrSlot button.off,#vrSlot #ARButton.off{background:rgba(40,20,70,.9)!important;border:1px solid var(--line)!important;color:#cdb8ff!important;box-shadow:none;cursor:default}
+#vrSlot a{background:rgba(40,20,70,.9)!important;border:1px solid var(--line)!important;color:#cdb8ff!important;font-size:10px!important}
+body.ar #arBadge{display:block}
+#arBadge{display:none;position:fixed;left:14px;top:56px;z-index:6;background:rgba(255,200,61,.92);color:#1a0b2e;font:700 11px system-ui;padding:4px 10px;border-radius:999px;letter-spacing:.06em}
 button{font:inherit;color:inherit;cursor:pointer}
 .ghost{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:7px 12px;font-size:12px}
 #toolbar{position:fixed;left:50%;bottom:12px;transform:translateX(-50%);display:flex;gap:8px;align-items:stretch;padding:8px;background:var(--panel);border:1px solid var(--line);border-radius:16px;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 0 30px rgba(107,43,217,.35);z-index:5;max-width:calc(100vw - 16px);overflow-x:auto;scrollbar-width:none}
@@ -46,6 +51,7 @@ body.locked #crosshair{display:block}
 #help .close{position:absolute;right:10px;top:8px;background:none;border:0;font-size:16px;opacity:.7}
 kbd{background:rgba(255,200,61,.14);border:1px solid rgba(255,200,61,.5);border-bottom-width:2px;border-radius:5px;padding:0 5px;font-size:11px;font-family:inherit;color:var(--gold)}
 @media (max-width:700px){
+  #vrSlot button,#vrSlot a{min-width:78px!important;font-size:10px!important;padding:0 6px!important}
   #help .cols{grid-template-columns:1fr}
   #status #countInfo{display:none}
   #status{justify-content:flex-start}

@@ -9,7 +9,8 @@ const GRID = 0.5, ROT_STEP = Math.PI / 12, MAX_LIGHTS = 8, WORLD_R = 30;
 const params = new URLSearchParams(location.search);
 
 // ---------- renderer / scene ----------
-const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: params.has('capture') });
+const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: params.has('capture'), alpha: true });
+renderer.setClearColor(0x0d0619, 1);
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -19,7 +20,8 @@ renderer.xr.enabled = true;
 document.getElementById('app').appendChild(renderer.domElement);
 
 const scene = new THREE.Scene();
-scene.fog = new THREE.FogExp2(0x12071f, 0.018);
+const fogObj = new THREE.FogExp2(0x12071f, 0.018);
+scene.fog = fogObj;
 
 const rig = new THREE.Group();              // player rig (moved by teleport / WASD)
 scene.add(rig);
@@ -37,6 +39,7 @@ const keyLight = new THREE.DirectionalLight(0xc9a8ff, 0.9);
 keyLight.position.set(15, 12, 20);
 scene.add(keyLight);
 
+const env = new THREE.Group(); env.name = 'environment'; scene.add(env);
 // gradient sky
 const sky = new THREE.Mesh(new THREE.SphereGeometry(500, 32, 16), new THREE.ShaderMaterial({
   side: THREE.BackSide, depthWrite: false, fog: false,
@@ -44,7 +47,7 @@ const sky = new THREE.Mesh(new THREE.SphereGeometry(500, 32, 16), new THREE.Shad
   vertexShader: 'varying vec3 vP; void main(){ vP = normalize(position); gl_Position = projectionMatrix*modelViewMatrix*vec4(position,1.); }',
   fragmentShader: 'uniform vec3 top,mid,bot; varying vec3 vP; void main(){ float h=vP.y; vec3 c = h>0.0 ? mix(mid,top,smoothstep(0.0,0.6,h)) : mix(mid,bot,smoothstep(0.0,-0.2,h)); c += vec3(0.35,0.12,0.5)*pow(1.0-abs(h),10.0); gl_FragColor=vec4(c,1.); }',
 }));
-scene.add(sky);
+env.add(sky);
 
 // stars (seeded so captures are repeatable)
 let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
@@ -60,7 +63,7 @@ let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 214748364
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-  scene.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, vertexColors: true, sizeAttenuation: true, fog: false, transparent: true, opacity: 0.9 })));
+  env.add(new THREE.Points(g, new THREE.PointsMaterial({ size: 1.6, vertexColors: true, sizeAttenuation: true, fog: false, transparent: true, opacity: 0.9 })));
 }
 // moon
 {
@@ -69,7 +72,7 @@ let seed = 7; const rnd = () => (seed = (seed * 16807) % 2147483647) / 214748364
   gr.addColorStop(0, 'rgba(255,236,180,1)'); gr.addColorStop(0.35, 'rgba(255,210,110,.9)'); gr.addColorStop(0.5, 'rgba(255,200,61,.25)'); gr.addColorStop(1, 'rgba(255,200,61,0)');
   x.fillStyle = gr; x.fillRect(0, 0, 128, 128);
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), fog: false, depthWrite: false }));
-  s.position.set(-160, 150, -260); s.scale.setScalar(70); scene.add(s);
+  s.position.set(-160, 150, -260); s.scale.setScalar(70); env.add(s);
 }
 
 // ground + grids
@@ -93,18 +96,39 @@ const ground = new THREE.Mesh(new THREE.CircleGeometry(WORLD_R + 60, 96), new TH
       gl_FragColor = vec4(mix(c, vec3(0.07, 0.027, 0.12), fog), 1.0);
     }`,
 }));
-ground.rotation.x = -Math.PI / 2; ground.name = 'ground'; scene.add(ground);
+ground.rotation.x = -Math.PI / 2; ground.name = 'ground'; env.add(ground);
 // neon ring border + pillars
 const ring = new THREE.Mesh(new THREE.TorusGeometry(WORLD_R, 0.06, 8, 160), new THREE.MeshBasicMaterial({ color: 0xa24bff }));
-ring.rotation.x = Math.PI / 2; ring.position.y = 0.05; scene.add(ring);
+ring.rotation.x = Math.PI / 2; ring.position.y = 0.05; env.add(ring);
 for (let i = 0; i < 12; i++) {
   const a = (i / 12) * Math.PI * 2, gold = i % 3 === 0;
   const p = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.08, gold ? 5 : 3, 8), new THREE.MeshBasicMaterial({ color: gold ? 0xffc83d : 0xa24bff }));
-  p.position.set(Math.cos(a) * WORLD_R, gold ? 2.5 : 1.5, Math.sin(a) * WORLD_R); scene.add(p);
+  p.position.set(Math.cos(a) * WORLD_R, gold ? 2.5 : 1.5, Math.sin(a) * WORLD_R); env.add(p);
 }
 // origin pad
 const pad = new THREE.Mesh(new THREE.RingGeometry(1.2, 1.32, 48), new THREE.MeshBasicMaterial({ color: 0xffc83d, transparent: true, opacity: 0.7 }));
-pad.rotation.x = -Math.PI / 2; pad.position.y = 0.004; scene.add(pad);
+pad.rotation.x = -Math.PI / 2; pad.position.y = 0.004; env.add(pad);
+
+// AR floor: subtle neon grid that fades out, only shown in passthrough
+const arFloor = new THREE.Mesh(new THREE.CircleGeometry(3, 64), new THREE.ShaderMaterial({
+  transparent: true, depthWrite: false,
+  vertexShader: 'varying vec3 vW; varying vec2 vL; void main(){ vL = position.xy; vec4 w = modelMatrix*vec4(position,1.); vW = w.xyz; gl_Position = projectionMatrix*viewMatrix*w; }',
+  fragmentShader: `varying vec3 vW; varying vec2 vL;
+    void main(){ vec2 p = vW.xz; vec2 g = abs(fract(p/0.5 - 0.5) - 0.5) / fwidth(p/0.5); float l = 1.0 - min(min(g.x, g.y), 1.0);
+      float fade = 1.0 - smoothstep(1.2, 3.0, length(vL));
+      gl_FragColor = vec4(mix(vec3(0.64,0.29,1.0), vec3(1.0,0.78,0.24), 0.25), l * 0.55 * fade + 0.05 * fade); }`,
+}));
+arFloor.rotation.x = -Math.PI / 2; arFloor.position.y = 0.003; arFloor.visible = false; scene.add(arFloor);
+let arMode = false, passthrough = true, arGridOn = true;
+function applyEnvVisibility() {
+  const showEnv = !arMode || !passthrough;
+  env.visible = showEnv;
+  scene.fog = showEnv ? fogObj : null;
+  renderer.setClearAlpha(showEnv ? 1 : 0);
+  arFloor.visible = arMode && passthrough && arGridOn;
+  document.body.classList.toggle('ar', arMode);
+  wrist.dirty = true;
+}
 
 // ---------- objects ----------
 const world = new THREE.Group(); world.name = 'world'; scene.add(world);
@@ -186,7 +210,7 @@ function updateCount() { document.getElementById('countInfo').textContent = `${w
 
 // ---------- actions ----------
 function snapObj(o) {
-  if (!snapOn) return;
+  if (!snapOn || arMode) return; // real rooms aren't on a 0.5 m grid
   o.position.x = Math.round(o.position.x / GRID) * GRID;
   o.position.z = Math.round(o.position.z / GRID) * GRID;
   const hh = halfHeight(o);
@@ -207,12 +231,13 @@ function spawn(type, at) {
   if (type === 'light' && lightCount() >= MAX_LIGHTS) return toast(`Max ${MAX_LIGHTS} lights for smooth VR`);
   pushUndo();
   const o = makeObject(type);
-  const p = at || spawnPoint();
-  o.position.set(p.x, type === 'light' ? 1.6 : 0.5, p.z);
+  const p = at || (arMode && arReticle.visible ? arReticle.position.clone() : spawnPoint(arMode ? 1.2 : 4));
+  const s0 = arMode ? 0.3 : 1; o.scale.setScalar(s0);
+  o.position.set(p.x, type === 'light' ? (arMode ? 1.2 : 1.6) : (arMode && arReticle.visible ? p.y : 0) + halfHeight(o), p.z);
   // face the player
   const cp = new THREE.Vector3(); camera.getWorldPosition(cp);
   o.rotation.y = Math.atan2(cp.x - p.x, cp.z - p.z);
-  snapObj(o); world.add(o); select(o); updateCount(); autosave();
+  if (!arMode) snapObj(o); world.add(o); select(o); updateCount(); autosave();
   pop(o); toast(`✦ ${LABEL[type]} spawned`);
   return o;
 }
@@ -444,7 +469,7 @@ function buildController(i) {
   const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xffc83d, transparent: true, opacity: 0.8 }));
   line.scale.z = 5; c.add(line);
   const st = { c, grip, line, held: null, gamepad: null, handedness: 'none', trig: false, squeeze: false, tele: null, turnLatch: false, axes: [0, 0] };
-  c.addEventListener('connected', e => { st.gamepad = e.data.gamepad; st.handedness = e.data.handedness; layoutWrist(); });
+  c.addEventListener('connected', e => { c.userData.inputSource = e.data; st.gamepad = e.data.gamepad; st.handedness = e.data.handedness; layoutWrist(); });
   c.addEventListener('disconnected', () => { st.gamepad = null; release(st); });
   c.addEventListener('selectstart', () => onTrigger(st, true));
   c.addEventListener('selectend', () => onTrigger(st, false));
@@ -480,7 +505,7 @@ function onTrigger(st, down) {
   if (down) {
     if (wrist.visible && hitWrist(st, true)) return;
     if (tryGrab(st)) return;
-    st.tele = true; // aiming teleport while held
+    if (!arMode) st.tele = true; // aiming teleport while held (VR only; AR stays aligned with the real room)
   } else {
     if (st.held && !st.squeeze) release(st);
     if (st.tele) { if (teleMarker.visible) teleportTo(teleMarker.position); st.tele = null; teleMarker.visible = false; }
@@ -493,8 +518,8 @@ function teleportTo(p) {
 buildController(0); buildController(1);
 
 // wrist menu: canvas-texture panel on the left controller
-const W = { w: 512, h: 384 };
-const wrist = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.18), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
+const W = { w: 512, h: 456 };
+const wrist = new THREE.Mesh(new THREE.PlaneGeometry(0.24, 0.24 * 456 / 512), new THREE.MeshBasicMaterial({ transparent: true, side: THREE.DoubleSide }));
 wrist.visible = false; wrist.dirty = true;
 const wCanvas = document.createElement('canvas'); wCanvas.width = W.w; wCanvas.height = W.h;
 const wTex = new THREE.CanvasTexture(wCanvas); wTex.colorSpace = THREE.SRGBColorSpace; wrist.material.map = wTex;
@@ -505,6 +530,14 @@ const wButtons = [];
   PALETTE.forEach((c, i) => wButtons.push({ x: 16 + i * 61, y: 206, w: 52, h: 46, color: c, run: () => recolor(c) }));
   const tools = [['⧉ Dup', () => act('dup')], ['🗑 Del', () => act('del')], ['↶ Undo', () => act('undo')], ['▦ Snap', () => act('snap'), 'snap'], ['💾 Save', () => act('save')]];
   tools.forEach(([l, f, id], i) => wButtons.push({ x: 16 + i * 98, y: 270, w: 90, h: 56, label: l, run: f, id }));
+  wButtons.push({ x: 16, y: 338, w: 236, h: 56, label: '👓 Passthrough', id: 'pass', run: () => {
+    if (!arMode) return toast('Passthrough needs Enter AR (exit VR first)');
+    passthrough = !passthrough; applyEnvVisibility(); toast(passthrough ? '👓 Passthrough ON' : '🌌 Night world ON');
+  } });
+  wButtons.push({ x: 260, y: 338, w: 236, h: 56, label: '▦ Floor grid', id: 'argrid', run: () => {
+    if (!arMode) return toast('Floor grid is for AR mode');
+    arGridOn = !arGridOn; applyEnvVisibility();
+  } });
 }
 function drawWrist() {
   const x = wCanvas.getContext('2d');
@@ -521,13 +554,14 @@ function drawWrist() {
       if (b.color === currentColor || hot) { x.strokeStyle = hot ? '#fff' : '#ffc83d'; x.lineWidth = 5; x.stroke(); }
       return;
     }
-    const on = b.id === 'snap' && snapOn;
+    const on = (b.id === 'snap' && snapOn) || (b.id === 'pass' && arMode && passthrough) || (b.id === 'argrid' && arMode && arGridOn);
+    if ((b.id === 'pass' || b.id === 'argrid') && !arMode) x.globalAlpha = 0.45;
     x.fillStyle = hot ? '#6b2bd9' : 'rgba(60,26,110,0.9)'; rr(x, b.x, b.y, b.w, b.h, 12); x.fill();
     x.strokeStyle = on || hot ? '#ffc83d' : 'rgba(162,75,255,0.7)'; x.lineWidth = 3; x.stroke();
     x.fillStyle = on ? '#ffc83d' : '#fff'; x.font = 'bold 22px system-ui'; x.textAlign = 'center'; x.textBaseline = 'middle';
-    x.fillText(b.label, b.x + b.w / 2, b.y + b.h / 2 + 1); x.textAlign = 'left'; x.textBaseline = 'alphabetic';
+    x.fillText(b.label, b.x + b.w / 2, b.y + b.h / 2 + 1); x.textAlign = 'left'; x.textBaseline = 'alphabetic'; x.globalAlpha = 1;
   });
-  x.fillStyle = '#9f86d6'; x.font = '16px system-ui'; x.fillText('Grip = grab · Trigger floor = teleport · Stick = turn / rotate+size', 18, 360);
+  x.fillStyle = '#9f86d6'; x.font = '16px system-ui'; x.fillText(arMode ? 'Grip = grab · Point at floor + spawn = place there' : 'Grip = grab · Trigger floor = teleport · Stick = turn / rotate+size', 18, 428);
   wTex.needsUpdate = true; wrist.dirty = false;
 }
 function rr(x, a, b, w, h, r) { x.beginPath(); x.roundRect ? x.roundRect(a, b, w, h, r) : x.rect(a, b, w, h); }
@@ -562,7 +596,7 @@ function updateXR(dt) {
     st.line.scale.z = hits[0] ? hits[0].distance : 5;
     if (hitWrist(st, false)) hoveringPanel = true;
     // teleport aim
-    if (st.tele && !st.held) {
+    if (st.tele && !st.held && !arMode) {
       aim(st); const p = new THREE.Vector3();
       if (ray.ray.direction.y < -0.05 && ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), p) && Math.hypot(p.x, p.z) < WORLD_R + 5) {
         teleMarker.position.set(p.x, 0.01, p.z); teleMarker.visible = true;
@@ -576,6 +610,8 @@ function updateXR(dt) {
       if (Math.abs(ax) > 0.2) st.held.rotateY(-ax * dt * 2.5);
       if (Math.abs(ay) > 0.2) { const f = 1 - ay * dt * 1.5; st.held.scale.multiplyScalar(f); st.held.scale.clampScalar(0.1, 20); }
       selBox.setFromObject(st.held);
+    } else if (arMode) {
+      // AR: the virtual build stays locked to the real room, so no turning or gliding
     } else if (st.handedness !== 'left') {
       if (Math.abs(ax) > 0.7 && !st.turnLatch) { st.turnLatch = true; snapTurn(ax > 0 ? -Math.PI / 6 : Math.PI / 6); }
       if (Math.abs(ax) < 0.3) st.turnLatch = false;
@@ -586,6 +622,7 @@ function updateXR(dt) {
     }
   }
   if (!hoveringPanel && wrist.hover) { wrist.hover = null; wrist.dirty = true; }
+  if (arMode) { updateHitTest(); const hp = new THREE.Vector3(); camera.getWorldPosition(hp); arFloor.position.set(hp.x, 0.003, hp.z); }
 }
 function snapTurn(a) {
   const cam = new THREE.Vector3(); camera.getWorldPosition(cam);
@@ -596,8 +633,69 @@ function snapTurn(a) {
 const vrBtn = VRButton.createButton(renderer);
 vrBtn.id = 'VRButton';
 document.getElementById('vrSlot').appendChild(vrBtn);
-renderer.xr.addEventListener('sessionstart', () => { rig.rotation.set(0, yaw, 0); camera.rotation.set(0, 0, 0); camera.position.set(0, 0, 0); document.body.classList.add('xr'); toggleHelp(false); });
-renderer.xr.addEventListener('sessionend', () => { wrist.visible = false; teleMarker.visible = false; camera.position.set(0, 1.6, 0); yaw = rig.rotation.y; rig.rotation.set(0, 0, 0); document.body.classList.remove('xr'); });
+const markXRButtons = () => document.querySelectorAll('#vrSlot button').forEach(b => b.classList.toggle('off', /NOT|NEEDS/i.test(b.textContent)));
+new MutationObserver(markXRButtons).observe(document.getElementById('vrSlot'), { subtree: true, childList: true, characterData: true });
+
+// ---------- AR / passthrough (WebXR immersive-ar; Quest shows your real room) ----------
+const arReticle = new THREE.Group();
+{
+  const r1 = new THREE.Mesh(new THREE.RingGeometry(0.07, 0.09, 40), new THREE.MeshBasicMaterial({ color: 0xffc83d }));
+  const r2 = new THREE.Mesh(new THREE.RingGeometry(0.11, 0.12, 40), new THREE.MeshBasicMaterial({ color: 0xa24bff, transparent: true, opacity: 0.8 }));
+  r1.rotation.x = r2.rotation.x = -Math.PI / 2; arReticle.add(r1, r2);
+}
+arReticle.visible = false; arReticle.matrixAutoUpdate = true; scene.add(arReticle);
+let hitSource = null, hitSourceFor = null;
+const arBtn = document.createElement('button');
+arBtn.id = 'ARButton'; arBtn.textContent = 'AR NOT SUPPORTED'; arBtn.disabled = true;
+document.getElementById('vrSlot').appendChild(arBtn);
+let arSession = null, arFallbackLocal = false;
+// phone AR (dom-overlay): taps on the toolbar shouldn't also count as XR taps
+['toolbar', 'topbar', 'help'].forEach(id => document.getElementById(id).addEventListener('beforexrselect', e => e.preventDefault()));
+async function startAR() {
+  if (arSession) return arSession.end();
+  const init = { requiredFeatures: ['local-floor'], optionalFeatures: ['hit-test', 'dom-overlay'], domOverlay: { root: document.body } };
+  let session;
+  arFallbackLocal = false;
+  try { session = await navigator.xr.requestSession('immersive-ar', init); renderer.xr.setReferenceSpaceType('local-floor'); }
+  catch (e) {
+    try { session = await navigator.xr.requestSession('immersive-ar', { optionalFeatures: ['hit-test'] }); renderer.xr.setReferenceSpaceType('local'); arFallbackLocal = true; }
+    catch (e2) { toast('Could not start AR: ' + (e2.message || e2)); return; }
+  }
+  arMode = true; arSession = session; passthrough = true;
+  session.addEventListener('end', () => { arSession = null; arMode = false; hitSource?.cancel?.(); hitSource = null; hitSourceFor = null; arReticle.visible = false; arBtn.textContent = 'ENTER AR'; applyEnvVisibility(); });
+  await renderer.xr.setSession(session);
+  if (!session.enabledFeatures || !session.enabledFeatures.includes('local-floor')) { if (renderer.xr.getReferenceSpace && arFallbackLocal) rig.position.y = 1.6; }
+  arBtn.textContent = 'EXIT AR';
+  applyEnvVisibility();
+}
+arBtn.addEventListener('click', startAR);
+if ('xr' in navigator) {
+  navigator.xr.isSessionSupported('immersive-ar').then(ok => { if (ok) { arBtn.disabled = false; arBtn.textContent = 'ENTER AR'; } }).catch(() => {});
+}
+async function updateHitTest() {
+  const frame = renderer.xr.getFrame(), session = renderer.xr.getSession();
+  const st = controllers.find(c => c.handedness === 'right') || controllers[1];
+  const src = st?.c?.userData?.inputSource;
+  if (!frame || !session || !src || !session.requestHitTestSource) { arReticle.visible = false; return; }
+  if (hitSourceFor !== src) {
+    hitSourceFor = src; hitSource = null;
+    session.requestHitTestSource({ space: src.targetRaySpace }).then(h => { if (hitSourceFor === src) hitSource = h; }).catch(() => {});
+  }
+  const res = hitSource ? frame.getHitTestResults(hitSource) : [];
+  const pose = res[0]?.getPose(renderer.xr.getReferenceSpace());
+  if (pose) {
+    const m = new THREE.Matrix4().fromArray(pose.transform.matrix).premultiply(rig.matrixWorld);
+    arReticle.position.setFromMatrixPosition(m); arReticle.quaternion.setFromRotationMatrix(m); arReticle.visible = true;
+  } else {
+    // fallback: point at the real floor plane (y = 0 with local-floor)
+    aim(st); const p = new THREE.Vector3(); ray.far = Infinity;
+    if (ray.ray.direction.y < -0.05 && ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), p) && p.distanceTo(ray.ray.origin) < 6) {
+      arReticle.position.copy(p); arReticle.quaternion.identity(); arReticle.visible = true;
+    } else arReticle.visible = false;
+  }
+}
+renderer.xr.addEventListener('sessionstart', () => { if (arMode) rig.position.y = 0; rig.rotation.set(0, yaw, 0); camera.rotation.set(0, 0, 0); camera.position.set(0, 0, 0); document.body.classList.add('xr'); toggleHelp(false); });
+renderer.xr.addEventListener('sessionend', () => { renderer.xr.setReferenceSpaceType('local-floor'); wrist.visible = false; teleMarker.visible = false; camera.position.set(0, 1.6, 0); yaw = rig.rotation.y; rig.rotation.set(0, 0, 0); document.body.classList.remove('xr'); });
 
 // ---------- loop ----------
 const clock = new THREE.Clock();
@@ -633,7 +731,7 @@ function tick() {
   renderer.render(scene, camera);
 }
 renderer.setAnimationLoop(tick);
-addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+addEventListener('resize', () => { if (renderer.xr.isPresenting) return; camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
 
 // ---------- start: restore autosave, or a small starter scene ----------
 try {
@@ -643,5 +741,7 @@ try {
 updateCount();
 
 // tiny API for testing / demos
-window.sandbox = { spawn, act, recolor, select, serialize, deserialize, world, rig, camera, renderer,
+window.sandbox = { THREE, get arReticle() { return arReticle; }, wristButtons: wButtons, get arMode() { return arMode; }, setARPreview: (on) => { arMode = on; passthrough = true; applyEnvVisibility(); }, spawn, act, recolor, select, serialize, deserialize, world, rig, camera, renderer,
   look: (y, p) => { yaw = y; pitch = p; }, get selected() { return selected; } };
+
+if (params.has('arpreview')) window.sandbox.setARPreview(true);
