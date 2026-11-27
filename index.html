@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#120822">
+<title>SCENA Sandbox · VR</title>
+<link rel="stylesheet" href="./style.css">
+<script type="importmap">
+{ "imports": { "three": "./vendor/three/build/three.module.js",
+               "three/addons/": "./vendor/three/addons/" } }
+</script>
+</head>
+<body>
+<div id="app"></div>
+
+<header id="topbar">
+  <div class="brand"><span class="logo">◆</span> SCENA <b>Sandbox</b></div>
+  <div id="status"><span id="selInfo">Nothing selected</span><span id="countInfo">0 objects</span></div>
+  <div class="topRight">
+    <button id="btnHelp" class="ghost" title="Controls (H)">❔ Controls</button>
+    <div id="vrSlot"></div>
+  </div>
+</header>
+
+<nav id="toolbar">
+  <div class="group" id="spawnGroup">
+    <span class="label">Spawn</span>
+    <button data-spawn="cube" title="Cube (1)">⬛<i>Cube</i></button>
+    <button data-spawn="sphere" title="Sphere (2)">⚪<i>Sphere</i></button>
+    <button data-spawn="cylinder" title="Cylinder (3)">🛢️<i>Cylinder</i></button>
+    <button data-spawn="cone" title="Cone (4)">🔺<i>Cone</i></button>
+    <button data-spawn="ramp" title="Ramp (5)">📐<i>Ramp</i></button>
+    <button data-spawn="light" title="Light (6)">💡<i>Light</i></button>
+  </div>
+  <div class="group" id="paletteGroup"><span class="label">Color</span></div>
+  <div class="group" id="editGroup">
+    <span class="label">Edit</span>
+    <button data-act="rotL" title="Rotate left (Q)">⟲<i>Turn</i></button>
+    <button data-act="rotR" title="Rotate right (E)">⟳<i>Turn</i></button>
+    <button data-act="up" title="Raise (Page Up / wheel)">⬆<i>Up</i></button>
+    <button data-act="down" title="Lower (Page Down / wheel)">⬇<i>Down</i></button>
+    <button data-act="grow" title="Bigger (R)">＋<i>Bigger</i></button>
+    <button data-act="shrink" title="Smaller (F)">－<i>Smaller</i></button>
+    <button data-act="dup" title="Duplicate (Ctrl+D)">⧉<i>Copy</i></button>
+    <button data-act="del" title="Delete (Del)" class="danger">🗑<i>Delete</i></button>
+    <button data-act="undo" title="Undo (Ctrl+Z)">↶<i>Undo</i></button>
+    <button data-act="snap" id="btnSnap" title="Snap to grid (G)" class="toggle on">▦<i>Snap</i></button>
+  </div>
+  <div class="group" id="fileGroup">
+    <span class="label">Build</span>
+    <button data-act="save" title="Save to this browser">💾<i>Save</i></button>
+    <button data-act="load" title="Load saved build">📂<i>Load</i></button>
+    <button data-act="export" title="Download JSON">⤓<i>Export</i></button>
+    <button data-act="import" title="Import JSON">⤒<i>Import</i></button>
+    <button data-act="clear" title="Clear everything" class="danger">✖<i>Clear</i></button>
+    <input type="file" id="fileInput" accept="application/json,.json" hidden>
+  </div>
+</nav>
+
+<div id="crosshair"></div>
+<div id="toast"></div>
+
+<section id="help" class="open">
+  <button class="close" id="helpClose" aria-label="Close">✕</button>
+  <h2>🎮 Controls</h2>
+  <div class="cols">
+    <div>
+      <h3>🖥️ Computer</h3>
+      <ul>
+        <li><kbd>W A S D</kbd> move · <kbd>Space</kbd>/<kbd>C</kbd> up/down</li>
+        <li><b>Right-drag</b> look around · <kbd>L</kbd> or double-click sky = mouse-look (Esc exits)</li>
+        <li><b>Click</b> an object to select · <b>drag</b> it to move</li>
+        <li><b>Wheel</b> on selected = raise/lower</li>
+        <li><kbd>Q</kbd>/<kbd>E</kbd> rotate · <kbd>R</kbd>/<kbd>F</kbd> bigger/smaller</li>
+        <li><kbd>1</kbd>–<kbd>6</kbd> spawn · <kbd>T</kbd> next color</li>
+        <li><kbd>Ctrl</kbd>+<kbd>D</kbd> duplicate · <kbd>Del</kbd> delete · <kbd>Ctrl</kbd>+<kbd>Z</kbd> undo · <kbd>G</kbd> snap</li>
+      </ul>
+    </div>
+    <div>
+      <h3>🥽 VR headset (Quest)</h3>
+      <ul>
+        <li>Tap <b>Enter VR</b></li>
+        <li><b>Left wrist</b> = menu. Point right hand, pull <b>trigger</b> to tap</li>
+        <li><b>Grip</b> or <b>trigger</b> on an object = grab it, move your hand, let go</li>
+        <li>While holding: <b>right stick</b> ←→ rotate, ↑↓ resize</li>
+        <li>Point at floor + <b>trigger</b> = teleport</li>
+        <li><b>Right stick</b> ←→ (not holding) = snap turn</li>
+      </ul>
+      <h3>📱 Phone</h3>
+      <ul>
+        <li>Tap to select · drag object to move · drag sky to look · two-finger drag to walk</li>
+      </ul>
+    </div>
+  </div>
+  <p class="hint">Your build auto-saves to this browser. Press <kbd>H</kbd> any time for this panel.</p>
+</section>
+
+<script type="module" src="./main.js"></script>
+</body>
+</html>
