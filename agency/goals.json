@@ -1,0 +1,12 @@
+{
+  "_note": "Nando ghost reads this. Not secret: it ships on the public site. Edit freely, keep it short.",
+  "owner": "Fernando",
+  "deadline": "summer 2027",
+  "goals": [
+    { "id": "body", "short": "175 lb lean", "line": "175 lb lean before summer 2027" },
+    { "id": "save", "short": "$10K saved", "line": "$10K saved before summer 2027" },
+    { "id": "lead", "short": "ops leadership", "line": "leveling up in operations leadership" },
+    { "id": "separate", "short": "work and side hustles apart", "line": "keeping You Move Me work and the side businesses strictly separate" },
+    { "id": "build", "short": "F&C, SCENA, flipzshop", "line": "building F&C Pro Painting, SCENA and kc.flipzshop" }
+  ]
+}
